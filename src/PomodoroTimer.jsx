@@ -14,29 +14,38 @@ const PomodoroTimer = () => {
   const [totalTime, setTotalTime] = useState(0)
   const [timeLeft, setTimeLeft] = useState(workTime * 60); // converting to seconds
 
+
+  // Start/stop the countdown
   useEffect(() => {
     let timer;
-    
-    if (!isActive) {
-      setTimeLeft((isWorkTime ? workTime : breakTime) * 60);
-    } 
+
     if (isActive && timeLeft > 0) {
       timer = setInterval(() => {
-        setTimeLeft((prev) => prev - 1);
+        setTimeLeft(prev => prev - 1);
       }, 1000);
-    } 
-    if (timeLeft === 0) {
-      setIsWorkTime(prev => !prev);
-      setIsActive(false); 
-      if (isWorkTime){
-        setTotalTime(prevTime => +prevTime + +workTime) //unary plus operator b/c this was being evaluated as as string
-      }
-      setTimeLeft((!isWorkTime ? breakTime : workTime)*60); // switch to break or work
-      isWorkTime ? setWorkCounter(prev => prev + 1) : setBreakCounter(prev => prev + 1);
     }
 
     return () => clearInterval(timer);
-  }, [isActive, workTime, timeLeft, isWorkTime, breakTime]);
+  }, [isActive, timeLeft]);
+
+
+  // When time hits 0 - switch modes
+  useEffect(() => {
+    if (timeLeft !== 0) return;
+
+    setIsWorkTime(prev => !prev);
+    setIsActive(false); // auto-pause on mode switch
+
+    if (isWorkTime) {
+      setTotalTime(prevTime => +prevTime + Number(workTime));
+      setWorkCounter(prev => prev + 1);
+      setTimeLeft(breakTime * 60);
+    } else {
+      setBreakCounter(prev => prev + 1);
+      setTimeLeft(workTime * 60);
+    }
+  }, [timeLeft]);
+
 
   useEffect(() => {
     if (auth.currentUser) {
@@ -89,18 +98,22 @@ const PomodoroTimer = () => {
 
   // **This still needs to be updated. Maybe replaced with a next button.
   const handleReset = () => {
-    setIsActive(false);
-    setTimeLeft(workTime * 60);
-    setIsWorkTime(true);
-  };
+  setIsActive(false);
+  setIsWorkTime(true);
+  setTimeLeft(workTime * 60);
+  setWorkCounter(1);
+  setBreakCounter(1);
+  setTotalTime(0);
+};
+
 
   return (
     <div className={darkMode ? 'dark-mode' : ''} style={{ textAlign: 'center', marginTop: '50px' }}>
       <input type="checkbox" name="darkMode" onChange={() => setDarkMode(prev => !prev)} /> 
         Dark Mode
-      <input type="number" name="workTime" defaultValue="25" onChange={(e) => setWorkTime(e.target.value)} />
+      <input type="number" name="workTime" defaultValue="25" onChange={(e) => setWorkTime(Number(e.target.value))} />
         Work Time
-      <input type="number" name="breakTime" defaultValue="5" onChange={(e) => setBreakTime(e.target.value)} /> 
+      <input type="number" name="breakTime" defaultValue="5" onChange={(e) => setBreakTime(Number(e.target.value))} /> 
         Break Time
       <h1>{isWorkTime ? `Work Time ${workCounter}` : `Break Time ${breakCounter}`}</h1>
       <h2>{formatTime(timeLeft)}</h2>
