@@ -28,8 +28,15 @@ const PomodoroTimer = () => {
     return () => clearInterval(timer);
   }, [isActive, timeLeft]);
 
+  // watches for user input changes
+  useEffect(() => {
+    if (!isActive) {
+      setTimeLeft((isWorkTime ? workTime : breakTime) * 60);
+    }
+  }, [workTime, breakTime, isWorkTime, isActive]);
 
-  // When time hits 0 - switch modes
+
+  // When time hits 0, switch modes
   useEffect(() => {
     if (timeLeft !== 0) return;
 
@@ -98,13 +105,13 @@ const PomodoroTimer = () => {
 
   // **This still needs to be updated. Maybe replaced with a next button.
   const handleReset = () => {
-  setIsActive(false);
-  setIsWorkTime(true);
-  setTimeLeft(workTime * 60);
-  setWorkCounter(1);
-  setBreakCounter(1);
-  setTotalTime(0);
-};
+    setIsActive(false);
+    setIsWorkTime(true);
+    setTimeLeft(workTime * 60);
+    setWorkCounter(1);
+    setBreakCounter(1);
+    setTotalTime(0);
+  };
 
 
   return (
