@@ -11,8 +11,34 @@ const PomodoroTimer = () => {
   const [breakTime, setBreakTime] = useState(5);
   const [breakCounter, setBreakCounter] = useState(1);
   const [workCounter, setWorkCounter] = useState(1);
-  const [totalTime, setTotalTime] = useState(0)
   const [timeLeft, setTimeLeft] = useState(workTime * 60); // converting to seconds
+
+
+  //Helper function for Firestore logic
+  const saveStudySession = (minutesCompleted) => {
+    if (auth.currentUser && minutesCompleted > 0) {
+      const userId = auth.currentUser.uid;
+      const date = formattedDate();
+      const studySessionRef = doc(db, 'users', userId, 'studySessions', date);
+
+      // Check if the document exists (for the very first session of the day)
+      getDoc(studySessionRef).then((docSnap) => {
+        if (docSnap.exists()) {
+          // If the document exists, atomically update it
+          updateDoc(studySessionRef, { minutesStudied: increment(minutesCompleted) }).catch((error) => {
+            console.error("Error updating study time in Firestore: ", error);
+          });
+        } else {
+          // If the document doesn't exist, create it with the initial value
+          setDoc(studySessionRef, { minutesStudied: minutesCompleted }).catch((error) => {
+            console.error("Error creating study time document in Firestore: ", error);
+          });
+        }
+      }).catch((error) => {
+        console.error("Error checking document existence for study session: ", error);
+      });
+    }
+  };
 
 
   // Start/stop the countdown
@@ -36,62 +62,27 @@ const PomodoroTimer = () => {
   }, [workTime, breakTime, isWorkTime, isActive]);
 
 
-  // When time hits 0, switch modes
+// When time hits 0, switch modes and save the session time
   useEffect(() => {
     if (timeLeft !== 0) return;
 
-    setIsWorkTime(prev => !prev);
+    setIsWorkTime(prev => !prev); // Switch from work to break, or break to work
     setIsActive(false); // auto-pause on mode switch
 
     if (isWorkTime) {
-      setTotalTime(prevTime => +prevTime + Number(workTime));
+      // Save the completed session to firestore
+      saveStudySession(workTime); 
+
+      // Update local state counters and set the next timer.
       setWorkCounter(prev => prev + 1);
       setTimeLeft(breakTime * 60);
     } else {
       setBreakCounter(prev => prev + 1);
       setTimeLeft(workTime * 60);
     }
+    
   }, [timeLeft]);
 
-
-  useEffect(() => {
-    if (auth.currentUser) {
-      const userId = auth.currentUser.uid;
-      const date = formattedDate();  // Get today's date formatted as a string (e.g., "2024-12-13")
-      const studySessionRef = doc(db, 'users', userId, 'studySessions', date);
-  
-      // Check if the document exists
-      getDoc(studySessionRef).then((docSnap) => {
-        if (docSnap.exists()) {
-          // If the document exists, update it
-          updateDoc(studySessionRef, { minutesStudied: increment(workTime) }).catch((error) => {
-            console.error("Error updating totalTime in Firestore: ", error);
-          });
-        } else {
-          // If the document doesn't exist, create it with an initial value
-          setDoc(studySessionRef, { minutesStudied: workTime }).catch((error) => {
-            console.error("Error creating totalTime document in Firestore: ", error);
-          });
-        }
-      }).catch((error) => {
-        console.error("Error checking document existence: ", error);
-      });
-    }
-  }, [totalTime]);
-  /*
-  // Update Firestore whenever totalTime changes
-  useEffect(() => {
-    if (auth.currentUser) {
-      const userId = auth.currentUser.uid; // Get the logged-in user's uid
-      const date = formattedDate()
-      const studySessionRef = doc(db, 'users', userId, 'studySessions', date);
-
-      updateDoc(studySessionRef, { minutesStudied: totalTime }).catch((error) => {
-        console.error("Error updating totalTime in Firestore: ", error);
-      });
-    }
-  }, [totalTime]); // Only re-run this effect when totalTime changes
-*/
 
   const formatTime = (seconds) => {
     const minutes = Math.floor(seconds / 60);
@@ -110,7 +101,6 @@ const PomodoroTimer = () => {
     setTimeLeft(workTime * 60);
     setWorkCounter(1);
     setBreakCounter(1);
-    setTotalTime(0);
   };
 
 
@@ -118,9 +108,9 @@ const PomodoroTimer = () => {
     <div className={darkMode ? 'dark-mode' : ''} style={{ textAlign: 'center', marginTop: '50px' }}>
       <input type="checkbox" name="darkMode" onChange={() => setDarkMode(prev => !prev)} /> 
         Dark Mode
-      <input type="number" name="workTime" defaultValue="25" onChange={(e) => setWorkTime(Number(e.target.value))} />
+      <input type="number" name="workTime" value={workTime} onChange={(e) => setWorkTime(Number(e.target.value))} />
         Work Time
-      <input type="number" name="breakTime" defaultValue="5" onChange={(e) => setBreakTime(Number(e.target.value))} /> 
+      <input type="number" name="breakTime" value={breakTime} onChange={(e) => setBreakTime(Number(e.target.value))} /> 
         Break Time
       <h1>{isWorkTime ? `Work Time ${workCounter}` : `Break Time ${breakCounter}`}</h1>
       <h2>{formatTime(timeLeft)}</h2>
