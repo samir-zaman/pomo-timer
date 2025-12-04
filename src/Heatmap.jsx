@@ -15,6 +15,8 @@ const Heatmap = () => {
   useEffect(() => {
     console.log("Effect running, auth status:", isAuth);
     console.log("Current user:", auth.currentUser);
+
+    let cal = null;
     
     // If not authenticated, don't try to fetch data
     if (!isAuth) {
@@ -44,7 +46,7 @@ const Heatmap = () => {
           return;
         }
 
-        const cal = new CalHeatmap();
+        cal = new CalHeatmap();
 
         cal.paint({
             range: 12, //number of domains
@@ -98,12 +100,15 @@ const Heatmap = () => {
       }
     };
 
-    fetchData();
-    
+    fetchData(); 
+
     return () => {
-      cal.destroy();
+      if (cal) {
+        console.log('Destroying CalHeatmap instance.');
+        cal.destroy();
+      }
     };
-  }, [isAuth]); 
+  }, [isAuth]);
   
   return isAuth ? (
     <div id='cal-heatmap'></div>
