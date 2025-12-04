@@ -46,7 +46,14 @@ const Heatmap = () => {
           return;
         }
 
+        //dynamically set the color scale's domain
+        const maxMinutes = data.reduce((max, session) => Math.max(max, session.value), 0);
+        const colorDomainMax = maxMinutes > 0 ? maxMinutes + 10 : 60;
+        console.log("color scale's max:", colorDomainMax);
+
+
         cal = new CalHeatmap();
+
 
         cal.paint({
             range: 12, //number of domains
@@ -66,7 +73,7 @@ const Heatmap = () => {
                   // Try some values: Purples, Blues, Turbo, Magma, etc ...
                   scheme: 'Cool',
                   type: 'linear',
-                  domain: [0, 200],
+                  domain: [0, colorDomainMax],
                 },
             date: {
                 start: data[0].date,
