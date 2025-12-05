@@ -45,6 +45,11 @@ const Heatmap = () => {
           console.log("No study sessions found");
           return;
         }
+        
+        //calculate start date
+        const twelveMonthsAgo = new Date();
+        twelveMonthsAgo.setMonth(twelveMonthsAgo.getMonth() - 11); 
+        twelveMonthsAgo.setDate(1); 
 
         //dynamically set the color scale's domain
         const maxMinutes = data.reduce((max, session) => Math.max(max, session.value), 0);
@@ -75,12 +80,13 @@ const Heatmap = () => {
                   type: 'linear',
                   domain: [0, colorDomainMax],
                 },
-            date: {
-                start: data[0].date,
-                highlight: formattedDate(), //highlight today's date
+            
             },
-            theme: 'dark'
-              },
+            date: {
+              start: twelveMonthsAgo,
+              highlight: formattedDate(), //highlight today's date
+            },
+            theme: 'light'
         },[
             [Legend,{
                 enabled: true,
