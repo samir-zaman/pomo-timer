@@ -4,17 +4,33 @@ body {
   color: #333;
 }
 
-button {
+header {
+  display: flex;
+  gap: 1rem;
+}
+
+.timer-button {
   margin: 10px;
   padding: 10px 20px;
   font-size: 16px;
   cursor: pointer;
 }
 
-.dark-mode {
-  background-color: #121212;
-  color: #ffffff;
+.icon-btn {
+  border: none;
+  background-color: transparent;
 }
+
+.header-icon {
+  width: 1rem;   
+  height: 1rem;
+}
+
+
+
+
+
+
 
 
 

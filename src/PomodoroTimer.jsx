@@ -6,6 +6,7 @@ import { formattedDate } from './utils';
 const PomodoroTimer = () => {
   const [darkMode, setDarkMode] = useState(false);
   const [isActive, setIsActive] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
   const [isWorkTime, setIsWorkTime] = useState(true);
   const [workTime, setWorkTime] = useState(25);
   const [breakTime, setBreakTime] = useState(5);
@@ -56,10 +57,10 @@ const PomodoroTimer = () => {
 
   // watches for user input changes
   useEffect(() => {
-    if (!isActive) {
+    if (!isActive && !isPaused) {
       setTimeLeft((isWorkTime ? workTime : breakTime) * 60);
     }
-  }, [workTime, breakTime, isWorkTime, isActive]);
+  }, [workTime, breakTime, isWorkTime, isActive, isPaused]);
 
 
 // When time hits 0, switch modes and save the session time
@@ -90,6 +91,75 @@ const PomodoroTimer = () => {
     return `${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
   };
 
+  const handleStart = () => {
+    setIsActive(true);
+    setIsPaused(false); // Starting means it's definitely not paused
+  };
+
+  const handlePause = () => {
+    setIsActive(false); // Stops the countdown
+    setIsPaused(true);  // Marks the state as paused
+  };
+  
+  // Resets the CURRENT session (work or break) back to its full time.
+  const handleReset = () => {
+    setIsActive(false);
+    setIsPaused(false); // Reset means the paused state is cleared
+    setTimeLeft((isWorkTime ? workTime : breakTime) * 60);
+  };
+
+  // Resets the entire timer back to Work Session 1
+  const handleFullReset = () => {
+    setIsActive(false);
+    setIsPaused(false);
+    setIsWorkTime(true);
+    setTimeLeft(workTime * 60);
+    setWorkCounter(1);
+    setBreakCounter(1);
+  };
+
+
+  const renderButtons = () => {
+    // If active (running), show Pause and Reset
+    if (isActive) {
+      return (
+        <>
+          <button className="timer-button" onClick={handlePause}>Pause</button>
+          <button className="timer-button" onClick={handleReset}>Reset</button>
+        </>
+      );
+    // If paused OR idle, show Start (clicking start handles both cases)
+    } else {
+      return (
+        <button className='timer-button' onClick={handleStart}>Start</button>
+      );
+    }
+  }
+
+
+  return (
+    <div className={darkMode ? 'dark-mode' : ''} style={{ textAlign: 'center', marginTop: '50px' }}>
+      <input type="checkbox" name="darkMode" onChange={() => setDarkMode(prev => !prev)} /> 
+        Dark Mode
+      <input type="number" name="workTime" value={workTime} onChange={(e) => setWorkTime(Number(e.target.value))} />
+        Work Time
+      <input type="number" name="breakTime" value={breakTime} onChange={(e) => setBreakTime(Number(e.target.value))} /> 
+        Break Time
+      <h1>{isWorkTime ? `Work Time ${workCounter}` : `Break Time ${breakCounter}`}</h1>
+      <h2>{formatTime(timeLeft)}</h2>
+      <div>
+        {renderButtons()}
+      </div>
+      <button className='timer-button' onClick={handleFullReset} style={{marginTop: '10px', display: 'block', margin: '10px auto'}}>
+        Full Reset to Work 1
+      </button>
+    </div>
+  );
+};
+
+export default PomodoroTimer;
+
+  /*
   const handleStartPause = () => {
     setIsActive(prev => !prev);
   };
@@ -122,4 +192,4 @@ const PomodoroTimer = () => {
   );
 };
 
-export default PomodoroTimer;
+export default PomodoroTimer;*/
