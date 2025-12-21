@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
+import { useOutletContext } from 'react-router-dom';
 import { db, auth } from './firebaseConfig';  
 import { doc, getDoc, setDoc, updateDoc, increment } from "firebase/firestore";
 import { formattedDate } from './utils';
@@ -13,7 +14,9 @@ const PomodoroTimer = () => {
   const [breakCounter, setBreakCounter] = useState(1);
   const [workCounter, setWorkCounter] = useState(1);
   const [timeLeft, setTimeLeft] = useState(workTime * 60); // converting to seconds
+  const {isRingerOn} = useOutletContext();
 
+  const alarm = useMemo(() => new Audio('/sounds/alarm.mp3'), []);
 
   //Helper function for Firestore logic
   const saveStudySession = (minutesCompleted) => {
@@ -70,6 +73,11 @@ const PomodoroTimer = () => {
     setIsWorkTime(prev => !prev); // Switch from work to break, or break to work
     setIsActive(false); // auto-pause on mode switch
 
+    if (isRingerOn) {
+      alarm.currentTime = 0; // Reset to start in case it's clicked rapidly
+      alarm.play().catch(error => console.error("Audio playback failed:", error));
+    }
+
     if (isWorkTime) {
       // Save the completed session to firestore
       saveStudySession(workTime); 
@@ -82,7 +90,7 @@ const PomodoroTimer = () => {
       setTimeLeft(workTime * 60);
     }
     
-  }, [timeLeft]);
+  }, [timeLeft, isRingerOn, alarm]);
 
 
   const formatTime = (seconds) => {
@@ -92,6 +100,10 @@ const PomodoroTimer = () => {
   };
 
   const handleStart = () => {
+    alarm.play().then(() => {
+      alarm.pause();
+      alarm.currentTime = 0;
+    }).catch(() => { /* Ignore initial block */ });
     setIsActive(true);
     setIsPaused(false); // Starting means it's definitely not paused
   };

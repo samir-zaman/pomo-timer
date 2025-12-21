@@ -2,11 +2,11 @@ import React, { useState, useEffect } from "react"
 import { Outlet, Link } from "react-router-dom"
 import { onAuthStateChanged, signOut } from "firebase/auth"
 import { auth } from "../firebaseConfig"
-import ResetIcon from "../icons/reset.svg?react";
-import SunIcon from "../icons/light_mode.svg?react";
-import MoonIcon from "../icons/dark_mode.svg?react";
-import RingerOnIcon from "../icons/ringer_on.svg?react";
-import RingerOffIcon from "../icons/ringer_off.svg?react";
+import ResetIcon from "../assets/icons/reset.svg?react";
+import SunIcon from "../assets/icons/light_mode.svg?react";
+import MoonIcon from "../assets/icons/dark_mode.svg?react";
+import RingerOnIcon from "../assets/icons/ringer_on.svg?react";
+import RingerOffIcon from "../assets/icons/ringer_off.svg?react";
 
 export default function Layout() {
     const [isAuth, setIsAuth] = useState(null);
@@ -49,9 +49,9 @@ export default function Layout() {
 
                 <button className="icon-btn" onClick={() => setIsRingerOn(!isRingerOn)}>
                     {isRingerOn ? (
-                        <RingerOnIcon className="header-icon" />
-                    ) : (
                         <RingerOffIcon className="header-icon" />
+                    ) : (
+                        <RingerOnIcon className="header-icon" />
                     )}
                 </button>
 
@@ -68,7 +68,7 @@ export default function Layout() {
                     {/* put nav links here, e.g. <Link to="/about">About</Link> */}
                 </div>
             </header>
-            <Outlet context={{isAuth}}/>
+            <Outlet context={{ isAuth, isRingerOn }}/>
         </>
     )
 }
