@@ -17,6 +17,8 @@ A Pomodoro-style productivity timer that tracks focused work time and visualizes
 After logging in, users can start Pomodoro sessions by selecting their preferred work and break durations. 
 
 Completed work sessions are saved to Firebase and displayed on a heatmap, allowing users to visually track productivity over time.
+<img width="1654" height="342" alt="image" src="https://github.com/user-attachments/assets/98f04078-4e4a-40e7-8ff3-d22f5b678782" />
+
 
 ## 🔧 Next Steps
 * [ ] Implement Dark mode
