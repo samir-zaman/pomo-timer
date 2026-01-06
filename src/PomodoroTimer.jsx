@@ -14,8 +14,8 @@ const PomodoroTimer = () => {
   const [breakCounter, setBreakCounter] = useState(1);
   const [workCounter, setWorkCounter] = useState(1);
   const [timeLeft, setTimeLeft] = useState(workTime * 60); // converting to seconds
-  const {isRingerOn} = useOutletContext();
 
+  const { isRingerOn, resetTick } = useOutletContext();
   const alarm = useMemo(() => new Audio('/sounds/alarm.mp3'), []);
 
   //Helper function for Firestore logic
@@ -92,6 +92,12 @@ const PomodoroTimer = () => {
     
   }, [timeLeft, isRingerOn, alarm]);
 
+  useEffect(() => {
+    if (resetTick > 0) {
+      handleFullReset();
+    }
+  }, [resetTick]);
+
 
   const formatTime = (seconds) => {
     const minutes = Math.floor(seconds / 60);
@@ -162,46 +168,8 @@ const PomodoroTimer = () => {
       <div>
         {renderButtons()}
       </div>
-      <button className='timer-button' onClick={handleFullReset} style={{marginTop: '10px', display: 'block', margin: '10px auto'}}>
-        Full Reset to Work 1
-      </button>
     </div>
   );
 };
 
 export default PomodoroTimer;
-
-  /*
-  const handleStartPause = () => {
-    setIsActive(prev => !prev);
-  };
-
-  // **This still needs to be updated. Maybe replaced with a next button.
-  const handleReset = () => {
-    setIsActive(false);
-    setIsWorkTime(true);
-    setTimeLeft(workTime * 60);
-    setWorkCounter(1);
-    setBreakCounter(1);
-  };
-
-
-  return (
-    <div className={darkMode ? 'dark-mode' : ''} style={{ textAlign: 'center', marginTop: '50px' }}>
-      <input type="checkbox" name="darkMode" onChange={() => setDarkMode(prev => !prev)} /> 
-        Dark Mode
-      <input type="number" name="workTime" value={workTime} onChange={(e) => setWorkTime(Number(e.target.value))} />
-        Work Time
-      <input type="number" name="breakTime" value={breakTime} onChange={(e) => setBreakTime(Number(e.target.value))} /> 
-        Break Time
-      <h1>{isWorkTime ? `Work Time ${workCounter}` : `Break Time ${breakCounter}`}</h1>
-      <h2>{formatTime(timeLeft)}</h2>
-      <button onClick={handleStartPause}>
-        {isActive ? 'Pause' : 'Start'}
-      </button>
-      <button onClick={handleReset}>Reset</button>
-    </div>
-  );
-};
-
-export default PomodoroTimer;*/

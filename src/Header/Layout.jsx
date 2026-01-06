@@ -12,6 +12,7 @@ export default function Layout() {
     const [isAuth, setIsAuth] = useState(null);
     const [isRingerOn, setIsRingerOn] = useState(true);
     const [isDarkMode, setIsDarkMode] = useState(false);
+    const [resetTick, setResetTick] = useState(0);
 
     useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -55,7 +56,7 @@ export default function Layout() {
                     )}
                 </button>
 
-                <button className="icon-btn">
+                <button className="icon-btn" onClick={() => setResetTick(prev => prev + 1)}>
                     <ResetIcon className="header-icon" />
                 </button>
 
@@ -68,7 +69,7 @@ export default function Layout() {
                     {/* put nav links here, e.g. <Link to="/about">About</Link> */}
                 </div>
             </header>
-            <Outlet context={{ isAuth, isRingerOn }}/>
+            <Outlet context={{ isAuth, isRingerOn, resetTick }}/>
         </>
     )
 }

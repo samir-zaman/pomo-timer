@@ -12,12 +12,12 @@ import { getFirestore, collection, addDoc } from "firebase/firestore";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyBnrlKSmV2z88VKBTN1G9Pw0O0MFlMPu4M",
-  authDomain: "pomodoro-timer-7575d.firebaseapp.com",
-  projectId: "pomodoro-timer-7575d",
-  storageBucket: "pomodoro-timer-7575d.firebasestorage.app",
-  messagingSenderId: "768275917145",
-  appId: "1:768275917145:web:f4442857635bbe200cc448"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID
 };
 
 // Initialize Firebase
