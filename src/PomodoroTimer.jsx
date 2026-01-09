@@ -5,7 +5,6 @@ import { doc, getDoc, setDoc, updateDoc, increment } from "firebase/firestore";
 import { formattedDate } from './utils';
 
 const PomodoroTimer = () => {
-  const [darkMode, setDarkMode] = useState(false);
   const [isActive, setIsActive] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [isWorkTime, setIsWorkTime] = useState(true);
@@ -15,7 +14,7 @@ const PomodoroTimer = () => {
   const [workCounter, setWorkCounter] = useState(1);
   const [timeLeft, setTimeLeft] = useState(workTime * 60); // converting to seconds
 
-  const { isRingerOn, resetTick } = useOutletContext();
+  const { isRingerOn, resetTick, isDarkMode } = useOutletContext();
   const alarm = useMemo(() => new Audio('/sounds/alarm.mp3'), []);
 
   //Helper function for Firestore logic
@@ -143,7 +142,7 @@ const PomodoroTimer = () => {
       return (
         <>
           <button className="timer-button" onClick={handlePause}>Pause</button>
-          <button className="timer-button" onClick={handleReset}>Reset</button>
+          <button className="timer-button secondary" onClick={handleReset}>Reset</button>
         </>
       );
     // If paused OR idle, show Start (clicking start handles both cases)
@@ -156,16 +155,42 @@ const PomodoroTimer = () => {
 
 
   return (
-    <div className={darkMode ? 'dark-mode' : ''} style={{ textAlign: 'center', marginTop: '50px' }}>
-      <input type="checkbox" name="darkMode" onChange={() => setDarkMode(prev => !prev)} /> 
-        Dark Mode
-      <input type="number" name="workTime" value={workTime} onChange={(e) => setWorkTime(Number(e.target.value))} />
-        Work Time
-      <input type="number" name="breakTime" value={breakTime} onChange={(e) => setBreakTime(Number(e.target.value))} /> 
-        Break Time
-      <h1>{isWorkTime ? `Work Time ${workCounter}` : `Break Time ${breakCounter}`}</h1>
-      <h2>{formatTime(timeLeft)}</h2>
-      <div>
+    <div className="timer-container">
+      <div className="timer-controls">
+        <div className="time-inputs">
+          <div className="input-group">
+            <label htmlFor="workTime">Work Time (minutes)</label>
+            <input 
+              type="number" 
+              id="workTime"
+              name="workTime" 
+              value={workTime} 
+              onChange={(e) => setWorkTime(Number(e.target.value))} 
+              min="1"
+              max="60"
+            />
+          </div>
+          <div className="input-group">
+            <label htmlFor="breakTime">Break Time (minutes)</label>
+            <input 
+              type="number" 
+              id="breakTime"
+              name="breakTime" 
+              value={breakTime} 
+              onChange={(e) => setBreakTime(Number(e.target.value))} 
+              min="1"
+              max="60"
+            />
+          </div>
+        </div>
+      </div>
+      
+      <div className="timer-display">
+        <h1 className="timer-title">{isWorkTime ? `Work Time ${workCounter}` : `Break Time ${breakCounter}`}</h1>
+        <div className="timer-time">{formatTime(timeLeft)}</div>
+      </div>
+      
+      <div className="timer-buttons">
         {renderButtons()}
       </div>
     </div>

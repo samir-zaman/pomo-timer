@@ -78,7 +78,7 @@ const Login = () => {
         </button>
       </form>
 
-      <button onClick={() => setIsLogin(!isLogin)}>
+      <button type="button" onClick={() => setIsLogin(!isLogin)}>
         {isLogin ? 'Don’t have an account? Sign up' : 'Already have an account? Login'}
       </button>
     </div>

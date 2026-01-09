@@ -123,10 +123,14 @@ const Heatmap = () => {
     };
   }, [isAuth]);
   
-  return isAuth ? (
-    <div id='cal-heatmap'></div>
-  ) : (
-    <p>Log in to see your heat map</p>
+  return (
+    <div className="heatmap-container">
+      {isAuth ? (
+        <div id='cal-heatmap'></div>
+      ) : (
+        <p>Log in to see your heat map</p>
+      )}
+    </div>
   );
 };
 

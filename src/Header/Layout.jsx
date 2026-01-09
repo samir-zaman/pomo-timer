@@ -34,42 +34,48 @@ export default function Layout() {
             console.error("Error signing out: ", error);
         });
     };
+
+    useEffect(() => {
+        if (isDarkMode) {
+            document.documentElement.classList.add('dark-mode');
+        } else {
+            document.documentElement.classList.remove('dark-mode');
+        }
+    }, [isDarkMode]);
+
     return (
         <>
             <header>
                 <Link to="/">Pomodoro Timer</Link>
-                <Link to="./heatmap">Heat Map</Link>
-
-                <button className="icon-btn" onClick={() => setIsDarkMode(!isDarkMode)}>
-                    {isDarkMode ? (
-                        <SunIcon className="header-icon" />
-                    ) : (
-                        <MoonIcon className="header-icon" />
-                    )}
-                </button>
-
-                <button className="icon-btn" onClick={() => setIsRingerOn(!isRingerOn)}>
-                    {isRingerOn ? (
-                        <RingerOffIcon className="header-icon" />
-                    ) : (
-                        <RingerOnIcon className="header-icon" />
-                    )}
-                </button>
-
-                <button className="icon-btn" onClick={() => setResetTick(prev => prev + 1)}>
-                    <ResetIcon className="header-icon" />
-                </button>
-
-                <div>
+                <div className="header-right">
+                    <Link to="./heatmap">Heat Map</Link>
+                    <button className="icon-btn" onClick={() => setIsDarkMode(!isDarkMode)} aria-label="Toggle dark mode">
+                        {isDarkMode ? (
+                            <SunIcon className="header-icon" />
+                        ) : (
+                            <MoonIcon className="header-icon" />
+                        )}
+                    </button>
+                    <button className="icon-btn" onClick={() => setIsRingerOn(!isRingerOn)} aria-label="Toggle ringer">
+                        {isRingerOn ? (
+                            <RingerOffIcon className="header-icon" />
+                        ) : (
+                            <RingerOnIcon className="header-icon" />
+                        )}
+                    </button>
+                    <button className="icon-btn" onClick={() => setResetTick(prev => prev + 1)} aria-label="Reset timer">
+                        <ResetIcon className="header-icon" />
+                    </button>
                     {isAuth ? (
                         <Link onClick={handleLogout}>Log out</Link>
                     ) : (
                         <Link to="/login">Log in</Link>
                     )}
-                    {/* put nav links here, e.g. <Link to="/about">About</Link> */}
                 </div>
             </header>
-            <Outlet context={{ isAuth, isRingerOn, resetTick }}/>
+            <main>
+                <Outlet context={{ isAuth, isRingerOn, resetTick, isDarkMode }}/>
+            </main>
         </>
     )
 }
