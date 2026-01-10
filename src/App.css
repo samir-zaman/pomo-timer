@@ -385,6 +385,9 @@ main {
   border-radius: 1rem;
   box-shadow: var(--shadow-md);
   transition: var(--transition);
+  width: 100%;
+  overflow-x: auto; 
+  display: block;
 }
 
 .heatmap-container p {
@@ -394,8 +397,38 @@ main {
   padding: 2rem;
 }
 
+.heatmap-container h1 {
+  display: flex;
+  justify-content: center;
+}
+
+.heatmap-container h1 span {
+  color: var(--accent-color);
+  margin-right: 0.5rem;
+}
+
 #cal-heatmap {
   padding: 1rem;
+  min-width: 900px;
+}
+
+#cal-heatmap .ch-domain-text {
+  font-size: 12px;
+  font-weight: 700;
+  font-family: inherit;
+}
+
+.heatmap-container::-webkit-scrollbar {
+  height: 8px;
+}
+
+.heatmap-container::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+
+.heatmap-container::-webkit-scrollbar-thumb {
+  background: var(--text-muted);
+  border-radius: 10px;
 }
 
 /* Dark mode specific adjustments */
@@ -434,9 +467,7 @@ html.dark-mode #cal-heatmap,
 
   .timer-buttons {
     flex-direction: column;
-  }
-
-  .timer-button {
+  }  .timer-button {
     width: 100%;
   }
 }

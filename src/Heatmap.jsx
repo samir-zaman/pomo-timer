@@ -11,6 +11,7 @@ import { formattedDate } from './utils';
 
 const Heatmap = () => {
   const { isAuth } = useOutletContext();
+  const [totalHours, setTotalHours] = useState(0);
 
   useEffect(() => {
     console.log("Effect running, auth status:", isAuth);
@@ -31,12 +32,19 @@ const Heatmap = () => {
         const snapshot = await getDocs(sessionsRef);
                 
         const data = [];
+        let totalMinutes = 0;
+
         snapshot.forEach(doc => {
+          const minutes = doc.data().minutesStudied || 0;
+          totalMinutes += minutes;
+
           data.push({
             date: doc.id,
             value: doc.data().minutesStudied
           });
         });
+
+        setTotalHours((totalMinutes / 60).toFixed(1));
 
         
         console.log("User Id:", auth.currentUser.uid)
@@ -64,10 +72,15 @@ const Heatmap = () => {
             range: 12, //number of domains
             domain: {
                 type: 'month',
-                gutter: 4, //space between each domain, in pixel
+                gutter: 3, //space between each domain, in pixel
                 padding: [5,0,0,0], //padding inside each domain, in pixel
             },
-            subDomain: {type: 'day'},
+            subDomain: {
+                type: 'day',
+                width: 12,
+                height: 12,
+                radius: 0
+            },
             data: {
                 source: data,
                 x: datum => datum.date,
@@ -91,8 +104,8 @@ const Heatmap = () => {
             [Legend,{
                 enabled: true,
                 itemSelector: null, //optional for customizing CSS
-                label: 'Hours studied',
-                width: 300,
+                label: 'Minutes studied',
+                width: 350,
             },],
             [CalendarLabel,{
                 position: 'left',
@@ -125,6 +138,7 @@ const Heatmap = () => {
   
   return (
     <div className="heatmap-container">
+      <h1><span>{totalHours}</span>{'hours studied in the past year'}</h1>
       {isAuth ? (
         <div id='cal-heatmap'></div>
       ) : (

@@ -63,9 +63,6 @@ export default function Layout() {
                             <RingerOnIcon className="header-icon" />
                         )}
                     </button>
-                    <button className="icon-btn" onClick={() => setResetTick(prev => prev + 1)} aria-label="Reset timer">
-                        <ResetIcon className="header-icon" />
-                    </button>
                     {isAuth ? (
                         <Link onClick={handleLogout}>Log out</Link>
                     ) : (
